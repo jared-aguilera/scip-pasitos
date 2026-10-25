@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Paciente</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <!-- navbar -->
+    <header class="navbar">
+        <div class="navbar-left">
+            <a href="#" class="navbar-brand">
+                <div class="logo-badge">
+                    <img src="assets/logo.png" alt="Pasitos Centro Psicopedagógico" class="brand-logo-img">
+                </div>
+            </a>
+            <nav class="navbar-nav">
+                <a href="#" class="nav-link">Inicio</a>
+                <a href="registro-paciente.html" class="nav-link active">Registrar paciente</a>
+                <a href="#" class="nav-link">Agenda</a>
+                <a href="#" class="nav-link">Expedientes</a>
+                <a href="#" class="nav-link">Reportes</a>
+            </nav>
+        </div>
+
+        <!-- perfil de usuario -->
+        <div class="user-menu-container">
+            <button type="button" class="user-button" id="btnUserMenu">
+                <span class="user-greeting">Hola, Recepción</span>
+                <span class="user-role-badge">Capturador ▾</span>
+            </button>
+            <div class="dropdown-menu" id="userDropdown">
+                <a href="#" class="dropdown-item">Mi cuenta</a>
+                <div class="dropdown-divider"></div>
+                <button type="button" class="dropdown-item danger" id="btnLogout">Cerrar sesión</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- contenedor principal -->
+    <main class="main-container">
+
+        <div class="page-header">
+            <h1 class="page-title">Registrar paciente</h1>
+        </div>
+
+        <!-- formulario -->
+        <form id="formRegistroPaciente" class="form-card" autocomplete="off">
+
+            <!-- datos del paciente -->
+            <section class="form-section">
+                <h2 class="section-title">Datos del paciente</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="numero_expediente">Número de expediente</label>
+                        <input type="text" id="numero_expediente" name="numero_expediente" class="form-control"
+                            value="[ Se asignará automáticamente ]" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="fecha_ingreso">Fecha de llenado / ingreso <span
+                                class="required">*</span></label>
+                        <input type="date" id="fecha_ingreso" name="fecha_ingreso" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="nombres">Nombre(s) del niño <span
+                                class="required">*</span></label>
+                        <input type="text" id="nombres" name="nombres" class="form-control" placeholder="Nombre(s)"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="primer_apellido">Primer apellido <span
+                                class="required">*</span></label>
+                        <input type="text" id="primer_apellido" name="primer_apellido" class="form-control"
+                            placeholder="Primer apellido" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="segundo_apellido">Segundo apellido</label>
+                        <input type="text" id="segundo_apellido" name="segundo_apellido" class="form-control"
+                            placeholder="Segundo apellido">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="apodo_afectivo">¿Cómo le gusta que le digan?</label>
+                        <input type="text" id="apodo_afectivo" name="apodo_afectivo" class="form-control"
+                            placeholder="Nombre corto o apodo">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="fecha_nacimiento">Fecha de nacimiento <span
+                                class="required">*</span></label>
+                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="edad_calculada">Edad</label>
+                        <input type="text" id="edad_calculada" class="form-control"
+                            placeholder="Se calcula automáticamente" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="sexo">Sexo <span class="required">*</span></label>
+                        <select id="sexo" name="sexo" class="form-control" required>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_psicologa">Psicóloga asignada (Evaluación) <span
+                                class="required">*</span></label>
+                        <select id="id_psicologa" name="id_psicologa" class="form-control" required>
+                            <option value="">Seleccione una psicóloga...</option>
+                            <option value="2">Gabriela Balderas Cerón</option>
+                            <option value="3">Angélica Gutiérrez</option>
+                            <option value="4">Fernanda López Martínez</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="escolaridad">Escolaridad actual</label>
+                        <select id="escolaridad" name="escolaridad" class="form-control">
+                            <option value="">Seleccionar...</option>
+                            <option value="Maternal">Maternal</option>
+                            <option value="Preescolar">Preescolar</option>
+                            <option value="Primaria">Primaria</option>
+                            <option value="Secundaria">Secundaria</option>
+                            <option value="Preparatoria">Preparatoria</option>
+                            <option value="Sin escolarizar">Sin escolarizar</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="escuela_procedencia">Escuela de procedencia</label>
+                        <input type="text" id="escuela_procedencia" name="escuela_procedencia" class="form-control"
+                            placeholder="Nombre de la escuela">
+                    </div>
+
+                    <div class="form-group col-span-3">
+                        <label class="form-label" for="motivo_consulta">Motivo de consulta / Observaciones de
+                            ingreso</label>
+                        <textarea id="motivo_consulta" name="motivo_consulta" class="form-control" rows="2"
+                            placeholder="Describa brevemente el motivo por el cual acude a Pasitos A.C."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- datos del tutor -->
+            <section class="form-section">
+                <h2 class="section-title">Datos del tutor y contacto</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="nombre_tutor">Nombre completo del tutor <span
+                                class="required">*</span></label>
+                        <input type="text" id="nombre_tutor" name="nombre_tutor" class="form-control"
+                            placeholder="Nombre de mamá, papá o tutor" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="parentesco_tutor">Parentesco <span
+                                class="required">*</span></label>
+                        <select id="parentesco_tutor" name="parentesco_tutor" class="form-control" required>
+                            <option value="Madre">Madre</option>
+                            <option value="Padre">Padre</option>
+                            <option value="Tutor Legal">Tutor Legal</option>
+                            <option value="Abuelo/a">Abuelo/a</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="telefono_principal">Teléfono celular <span
+                                class="required">*</span></label>
+                        <input type="tel" id="telefono_principal" name="telefono_principal" class="form-control"
+                            placeholder="10 dígitos" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="telefono_secundario">Teléfono de casa</label>
+                        <input type="tel" id="telefono_secundario" name="telefono_secundario" class="form-control"
+                            placeholder="10 dígitos">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email_tutor">Correo electrónico</label>
+                        <input type="email" id="email_tutor" name="email_tutor" class="form-control"
+                            placeholder="correo@ejemplo.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="direccion_domicilio">Dirección actual</label>
+                        <input type="text" id="direccion_domicilio" name="direccion_domicilio" class="form-control"
+                            placeholder="Calle, número, colonia, municipio">
+                    </div>
+                </div>
+            </section>
+
+            <!-- salud y medicacion -->
+            <section class="form-section">
+                <h2 class="section-title">Salud y medicación</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="toma_medicamento">¿Toma algún medicamento?</label>
+                        <select id="toma_medicamento" name="toma_medicamento" class="form-control">
+                            <option value="no">No</option>
+                            <option value="si">Sí</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="detalle_medicamento">¿Cuál medicamento?</label>
+                        <input type="text" id="detalle_medicamento" name="detalle_medicamento" class="form-control"
+                            placeholder="Nombre y dosis" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="alergias">Alergias</label>
+                        <input type="text" id="alergias" name="alergias" class="form-control"
+                            placeholder="Alimentos, medicamentos, etc.">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="problemas_asociados">¿Presenta algún problema actual?</label>
+                        <input type="text" id="problemas_asociados" name="problemas_asociados" class="form-control"
+                            placeholder="Auditivo, visual, motriz u otro">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="medico_neurologo_nombre">Médico familiar o Neurólogo</label>
+                        <input type="text" id="medico_neurologo_nombre" name="medico_neurologo_nombre"
+                            class="form-control" placeholder="Nombre del médico">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="medico_neurologo_telefono">Teléfono del médico</label>
+                        <input type="tel" id="medico_neurologo_telefono" name="medico_neurologo_telefono"
+                            class="form-control" placeholder="10 dígitos">
+                    </div>
+                </div>
+            </section>
+
+            <!-- acciones -->
+            <div class="form-actions">
+                <span class="legend-text">Los campos marcados con <span class="required">*</span> son
+                    obligatorios.</span>
+                <div class="btn-group">
+                    <button type="reset" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Registrar paciente</button>
+                </div>
+            </div>
+
+        </form>
+
+    </main>
+
+    <script src="js/registro.js"></script>
+</body>
+
+</html>
