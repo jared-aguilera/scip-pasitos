@@ -1,0 +1,30 @@
+<!-- navbar -->
+<header class="navbar">
+    <div class="navbar-left">
+        <a href="index.html" class="navbar-brand">
+            <div class="logo-badge">
+                <img src="assets/logo.png" alt="Pasitos Centro Psicopedagógico" class="brand-logo-img">
+            </div>
+        </a>
+        <nav class="navbar-nav">
+            <a href="index.html" class="nav-link" data-link="index">Inicio</a>
+            <a href="registro-paciente.html" class="nav-link" data-link="registro-paciente">Registrar paciente</a>
+            <a href="#" class="nav-link" data-link="agenda">Agenda</a>
+            <a href="#" class="nav-link" data-link="expedientes">Expedientes</a>
+            <a href="#" class="nav-link" data-link="reportes">Reportes</a>
+        </nav>
+    </div>
+
+    <!-- perfil de usuario -->
+    <div class="user-menu-container">
+        <button type="button" class="user-button" id="btnUserMenu">
+            <span class="user-greeting">Hola, Recepción</span>
+            <span class="user-role-badge">Capturador ▾</span>
+        </button>
+        <div class="dropdown-menu" id="userDropdown">
+            <a href="#" class="dropdown-item">Mi cuenta</a>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="dropdown-item danger" id="btnLogout">Cerrar sesión</button>
+        </div>
+    </div>
+</header>

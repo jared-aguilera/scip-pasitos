@@ -2,8 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputFechaNac = document.getElementById('fecha_nacimiento');
     const inputEdad = document.getElementById('edad_calculada');
     const inputFechaIngreso = document.getElementById('fecha_ingreso');
-    const btnUserMenu = document.getElementById('btnUserMenu');
-    const userDropdown = document.getElementById('userDropdown');
     const selectMedicamento = document.getElementById('toma_medicamento');
     const inputCualMedicamento = document.getElementById('detalle_medicamento');
 
@@ -12,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputFechaIngreso.value = new Date().toISOString().split('T')[0];
     }
 
-    // Calculo automatico de la edad
+    // Calcular edad
     if (inputFechaNac && inputEdad) {
         inputFechaNac.addEventListener('change', () => {
             const fechaVal = inputFechaNac.value;
@@ -45,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Control de campo para detalle de medicamento
+    // Activar campo medicamento
     if (selectMedicamento && inputCualMedicamento) {
         selectMedicamento.addEventListener('change', () => {
             if (selectMedicamento.value === 'si') {
@@ -54,20 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 inputCualMedicamento.disabled = true;
                 inputCualMedicamento.value = '';
-            }
-        });
-    }
-
-    // Menu desplegable de usuario
-    if (btnUserMenu && userDropdown) {
-        btnUserMenu.addEventListener('click', (e) => {
-            e.stopPropagation();
-            userDropdown.classList.toggle('show');
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!userDropdown.contains(e.target) && e.target !== btnUserMenu) {
-                userDropdown.classList.remove('show');
             }
         });
     }
