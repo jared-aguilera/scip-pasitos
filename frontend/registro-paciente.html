@@ -39,8 +39,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="nombres">Nombre(s) del niño <span
-                                class="required">*</span></label>
+                        <label class="form-label" for="nombres">Nombre(s)<span class="required">*</span></label>
                         <input type="text" id="nombres" name="nombres" class="form-control" placeholder="Nombre(s)"
                             required>
                     </div>
@@ -86,17 +85,6 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="id_psicologa">Psicóloga asignada (Evaluación) <span
-                                class="required">*</span></label>
-                        <select id="id_psicologa" name="id_psicologa" class="form-control" required>
-                            <option value="">Seleccione una psicóloga...</option>
-                            <option value="2">Gabriela Balderas Cerón</option>
-                            <option value="3">Angélica Gutiérrez</option>
-                            <option value="4">Fernanda López Martínez</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
                         <label class="form-label" for="escolaridad">Escolaridad actual</label>
                         <select id="escolaridad" name="escolaridad" class="form-control">
                             <option value="">Seleccionar...</option>
@@ -119,7 +107,7 @@
                         <label class="form-label" for="motivo_consulta">Motivo de consulta / Observaciones de
                             ingreso</label>
                         <textarea id="motivo_consulta" name="motivo_consulta" class="form-control" rows="2"
-                            placeholder="Describa brevemente el motivo por el cual acude a Pasitos A.C."></textarea>
+                            placeholder="Describa brevemente el motivo por el cual acude a Pasitos"></textarea>
                     </div>
                 </div>
             </section>
@@ -130,10 +118,23 @@
 
                 <div class="form-grid">
                     <div class="form-group">
-                        <label class="form-label" for="nombre_tutor">Nombre completo del tutor <span
+                        <label class="form-label" for="nombre_tutor">Nombre(s) del tutor <span
                                 class="required">*</span></label>
                         <input type="text" id="nombre_tutor" name="nombre_tutor" class="form-control"
-                            placeholder="Nombre de mamá, papá o tutor" required>
+                            placeholder="Nombre(s)" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="primer_apellido_tutor">Primer apellido <span
+                                class="required">*</span></label>
+                        <input type="text" id="primer_apellido_tutor" name="primer_apellido_tutor" class="form-control"
+                            placeholder="Primer apellido" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="segundo_apellido_tutor">Segundo apellido</label>
+                        <input type="text" id="segundo_apellido_tutor" name="segundo_apellido_tutor" class="form-control"
+                            placeholder="Segundo apellido">
                     </div>
 
                     <div class="form-group">
@@ -152,22 +153,16 @@
                         <label class="form-label" for="telefono_principal">Teléfono celular <span
                                 class="required">*</span></label>
                         <input type="tel" id="telefono_principal" name="telefono_principal" class="form-control"
-                            placeholder="10 dígitos" required>
+                            placeholder="10 dígitos numéricos" pattern="[0-9]{10}" maxlength="10" minlength="10" inputmode="numeric" required>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="telefono_secundario">Teléfono de casa</label>
                         <input type="tel" id="telefono_secundario" name="telefono_secundario" class="form-control"
-                            placeholder="10 dígitos">
+                            placeholder="10 dígitos numéricos" pattern="[0-9]{10}" maxlength="10" minlength="10" inputmode="numeric">
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="email_tutor">Correo electrónico</label>
-                        <input type="email" id="email_tutor" name="email_tutor" class="form-control"
-                            placeholder="correo@ejemplo.com">
-                    </div>
-
-                    <div class="form-group">
+                    <div class="form-group col-span-3">
                         <label class="form-label" for="direccion_domicilio">Dirección actual</label>
                         <input type="text" id="direccion_domicilio" name="direccion_domicilio" class="form-control"
                             placeholder="Calle, número, colonia, municipio">
@@ -215,7 +210,7 @@
                     <div class="form-group">
                         <label class="form-label" for="medico_neurologo_telefono">Teléfono del médico</label>
                         <input type="tel" id="medico_neurologo_telefono" name="medico_neurologo_telefono"
-                            class="form-control" placeholder="10 dígitos">
+                            class="form-control" placeholder="10 dígitos numéricos" pattern="[0-9]{10}" maxlength="10" minlength="10" inputmode="numeric">
                     </div>
                 </div>
             </section>
@@ -226,13 +221,27 @@
                     obligatorios.</span>
                 <div class="btn-group">
                     <button type="reset" class="btn btn-secondary">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Registrar paciente</button>
+                    <button type="submit" id="btnRegistrarPaciente" class="btn btn-primary">Registrar paciente</button>
                 </div>
             </div>
 
         </form>
 
     </main>
+
+    <!-- ventana de confirmacion -->
+    <div id="modalExito" class="modal-backdrop" role="dialog" aria-modal="true">
+        <div class="modal-content">
+            <button type="button" class="modal-close" id="btnCerrarModalCruz" aria-label="Cerrar">&times;</button>
+            <img src="assets/tick-sign.png" alt="Exito" class="modal-icon">
+            <h3 class="modal-title">¡Paciente registrado con éxito!</h3>
+            <div class="modal-expediente-badge" id="modalExpedienteTexto">EXP-2026-000</div>
+            <p class="modal-desc">El expediente ha sido dado de alta correctamente.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-primary" id="btnAceptarModal">Aceptar</button>
+            </div>
+        </div>
+    </div>
 
     <script src="js/navbar.js"></script>
     <script src="js/registro.js"></script>
