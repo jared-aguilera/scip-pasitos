@@ -1,4 +1,22 @@
-document.addEventListener('DOMContentLoaded', () => {
+// Se agregó async
+document.addEventListener('DOMContentLoaded', async () => {
+
+    //INICIO DE CAMBIOS ABSALON: Protección de rutas
+    try {
+        const sessionRes = await fetch('../backend/api/session.php');
+        const sessionData = await sessionRes.json();
+
+        if (!sessionData.logged_in) {
+            // Si no esta logueado, lo patea al login y detiene la ejecucion
+            window.location.href = 'login.html';
+            return;
+        }
+    } catch (error) {
+        console.error("Error al verificar sesión", error);
+    }
+    //FIN DE CAMBIOS ABSALON
+
+
     const container = document.getElementById('navbar-container');
     if (!container) return;
 
@@ -39,6 +57,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             }
+
+            // INICIO DE CAMBIOS ABSALON: Cerrar sesion
+            const btnLogout = Array.from(document.querySelectorAll('.dropdown-item')).find(el => el.textContent.toLowerCase().includes('cerrar'));
+            
+            if (btnLogout) {
+                btnLogout.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await fetch('../backend/api/logout.php');
+                    window.location.href = 'login.html';
+                });
+            }
+            // FIN DE CAMBIOS ABSALON
+
         })
         .catch(err => console.error(err));
 });
