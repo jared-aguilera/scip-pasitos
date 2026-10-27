@@ -33,8 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             window.location.href = 'registro-paciente.html';
                             break;
                         case 'Psicólogo':
-                            // Esta vista la haran Jared y Dominic
-                            window.location.href = 'index.html'; 
+                            window.location.href = 'expedientes.html';
                             break;
                         case 'Administrador':
                             window.location.href = 'index.html';

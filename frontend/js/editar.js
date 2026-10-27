@@ -19,6 +19,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const idPaciente = urlParams.get('id');
 
+    // El enlace de regreso abre directamente el expediente de este paciente
+    const enlaceVolver = document.getElementById('enlaceVolver');
+    if (enlaceVolver && idPaciente) {
+        enlaceVolver.href = `expedientes.html#/expediente/${encodeURIComponent(idPaciente)}`;
+    }
+
     // Estatus con el que se cargó el expediente (para saber si cambió)
     let estatusOriginal = null;
 

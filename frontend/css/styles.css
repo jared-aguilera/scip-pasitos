@@ -516,3 +516,196 @@ textarea.form-control {
         flex-direction: column;
     }
 }
+
+
+/* ==========================================================
+   EXPEDIENTES (US-06): buscador y vista de expediente
+   ========================================================== */
+.search-box {
+    position: relative;
+}
+
+.search-box .search-icon {
+    position: absolute;
+    left: 0.95rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.search-box .form-control {
+    padding: 0.8rem 2.6rem 0.8rem 2.75rem;
+    font-size: 0.97rem;
+}
+
+.search-clear {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.35rem;
+    line-height: 1;
+    padding: 0.3rem 0.55rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: none;
+}
+
+.search-clear:hover {
+    color: var(--text-main);
+    background-color: var(--bg-readonly);
+}
+
+.result-count {
+    margin: 1rem 0.15rem 0.35rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.result-list {
+    list-style: none;
+}
+
+.result-row {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    width: 100%;
+    background: none;
+    border: none;
+    border-top: 1px solid var(--border-readonly);
+    padding: 0.8rem 0.5rem;
+    text-align: left;
+    font-family: inherit;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.result-row:hover {
+    background-color: #fff6ef;
+}
+
+.avatar {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #fff0e3;
+    color: #b04a06;
+    display: grid;
+    place-items: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.result-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.result-name {
+    display: block;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.result-sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.result-psico {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+.pill {
+    display: inline-block;
+    background-color: #fff0e3;
+    color: #b04a06;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2.75rem 1rem 1.75rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-readonly);
+}
+
+.empty-state strong {
+    display: block;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.15rem;
+    color: var(--text-main);
+    margin-bottom: 0.3rem;
+}
+
+.list-note {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+/* vista de expediente */
+.btn-back {
+    display: inline-block;
+    text-decoration: none;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem 0;
+    margin-bottom: 0.9rem;
+}
+
+.btn-back:hover {
+    color: var(--primary);
+}
+
+.exp-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.exp-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 0.35rem;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+}
+
+.data-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-main);
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+    .result-psico {
+        display: none;
+    }
+}

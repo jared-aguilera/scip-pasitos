@@ -1,203 +1,215 @@
 // US-06: busqueda de pacientes y vista general del expediente.
-// Datos de ejemplo con los mismos nombres de columna de database/schema.sql,
-// para reemplazarlos despues por el endpoint (MySQL) sin tocar la interfaz.
+// Todo viene de la base de datos a traves de:
+//   backend/api/session.php       -> usuario y rol en sesion
+//   backend/api/get_pacientes.php -> lista para el buscador (ya filtrada por rol en el servidor)
+//   backend/api/get_paciente.php  -> expediente completo de un paciente
+// La edicion la hace editar-paciente.html?id=<id_paciente>.
+(() => {
+    const API = '../backend/api/';
+    const $ = s => document.querySelector(s);
 
-// ---------- Datos de ejemplo (usuarios del seeds.sql) ----------
-const USUARIOS = [
-    { id_usuario: 5, nombre: 'Recepción', apellidos: 'Pasitos A.C.', rol: 'Capturador' },
-    { id_usuario: 1, nombre: 'Susana', apellidos: 'Nieves', rol: 'Administrador' },
-    { id_usuario: 2, nombre: 'Gabriela', apellidos: 'Balderas Cerón', rol: 'Psicólogo' },
-    { id_usuario: 3, nombre: 'Angélica', apellidos: 'Gutiérrez', rol: 'Psicólogo' }
-];
+    let sesion = { rol: '' };
+    let pacientes = [];
+    let consulta = '';
 
-function hace(meses, dias) {
-    const d = new Date();
-    d.setMonth(d.getMonth() - meses);
-    d.setDate(d.getDate() - (dias || 0));
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-}
+    // ---------- Utilidades ----------
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    const parseFecha = s => { const [y, m, d] = String(s).slice(0, 10).split('-').map(Number); return new Date(y, m - 1, d); };
+    const fmtFecha = s => s ? parseFecha(s).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+    const unir = (...partes) => partes.filter(Boolean).join(' ');
+    const nombreCompleto = p => unir(p.nombres, p.primer_apellido, p.segundo_apellido);
+    const iniciales = p => ((p.nombres || '?')[0] + (p.primer_apellido || '')[0]).toUpperCase();
+    const fmtTel = t => (t && /^\d{10}$/.test(t)) ? t.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3') : (t || '');
+    const esPsicologo = () => sesion.rol === 'Psicólogo';
 
-const P = (id, nombres, ap1, ap2, nac, ingreso, psic, tutor) => ({
-    id_paciente: id,
-    numero_expediente: 'EXP-' + String(id).padStart(4, '0'),
-    nombres, primer_apellido: ap1, segundo_apellido: ap2,
-    fecha_nacimiento: nac, fecha_ingreso: ingreso,
-    estatus: 'Evaluación', id_psicologa: psic, tutor
-});
-const T = (nombres, ap1, ap2, parentesco, tel1, tel2, email, dir) => ({
-    nombres, primer_apellido: ap1, segundo_apellido: ap2, parentesco,
-    telefono_principal: tel1, telefono_secundario: tel2, email, direccion_domicilio: dir
-});
-
-const PACIENTES = [
-    P(1, 'José Ángel', 'Hernández', 'Núñez', '2018-03-14', hace(27), 2, T('María', 'Núñez', 'Pérez', 'Madre', '6641234501', '6646001122', 'maria.nunez@correo.com', 'Calle Olivos 123, Col. Las Palmas, Tijuana')),
-    P(2, 'Sofía', 'García', 'Luna', '2016-11-02', hace(5), 2, T('Roberto', 'García', 'Díaz', 'Padre', '6641234502', '', '', 'Av. Revolución 456, Zona Centro, Tijuana')),
-    P(3, 'Mateo', 'Ramírez', 'Soto', '2019-07-21', hace(0, 12), 3, T('Laura', 'Soto', 'Vega', 'Madre', '6641234503', '6646003344', 'laura.soto@correo.com', 'Blvd. Salinas 78, Otay, Tijuana')),
-    P(4, 'María Fernanda', 'López', 'Cota', '2015-01-30', hace(12), 3, T('Carmen', 'Cota', 'Ruiz', 'Abuela', '6641234504', '', '', 'Calle Pino 9, Col. Libertad, Tijuana')),
-    P(5, 'Emiliano', 'Martínez', 'Rojas', '2017-09-09', hace(1), 2, T('Jorge', 'Martínez', 'León', 'Tutor', '6641234505', '', 'jorge.m@correo.com', 'Priv. Encino 31, Col. Mariano Matamoros, Tijuana')),
-    P(6, 'Valentina', 'Núñez', 'Aguilar', '2020-05-17', hace(8, 3), 3, T('Daniela', 'Aguilar', 'Ponce', 'Madre', '6641234506', '6646005566', '', 'Calle Nogal 220, Col. Hidalgo, Tijuana')),
-    P(7, 'Santiago', 'Pérez', 'Ibarra', '2014-12-25', hace(36), 2, T('Héctor', 'Pérez', 'Salas', 'Padre', '6641234507', '', 'hector.perez@correo.com', 'Av. Reforma 1500, Tijuana')),
-    P(8, 'Camila', 'Gómez', 'Reyes', '2018-08-08', hace(18), 3, T('Patricia', 'Reyes', 'Mora', 'Madre', '6641234508', '6646007788', '', 'Calle Cedro 45, Col. Obrera, Tijuana')),
-    P(9, 'Jose Luis', 'Hernández', 'Ortega', '2016-04-04', hace(3), 3, T('Elena', 'Ortega', 'Díaz', 'Madre', '6641234509', '', 'elena.o@correo.com', 'Calle Fresno 12, Col. Roma, Tijuana'))
-];
-
-// ---------- Utilidades ----------
-const $ = s => document.querySelector(s);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-const parseFecha = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
-const fmtFecha = s => parseFecha(s).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
-const nombreCompleto = p => [p.nombres, p.primer_apellido, p.segundo_apellido].filter(Boolean).join(' ');
-const iniciales = p => (p.nombres[0] + p.primer_apellido[0]).toUpperCase();
-const nombreUsuario = id => { const u = USUARIOS.find(x => x.id_usuario === id); return u ? u.nombre + ' ' + u.apellidos : 'Sin asignar'; };
-const fmtTel = t => (t && t.length === 10) ? t.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3') : (t || '');
-
-function mesesDesde(fecha) {
-    const a = parseFecha(fecha), b = new Date();
-    let m = (b.getFullYear() - a.getFullYear()) * 12 + b.getMonth() - a.getMonth();
-    if (b.getDate() < a.getDate()) m--;
-    return Math.max(m, 0);
-}
-function calcularEdad(nac) {
-    const m = mesesDesde(nac), y = Math.floor(m / 12);
-    if (y < 1) return m === 1 ? '1 mes' : m + ' meses';
-    return y === 1 ? '1 año' : y + ' años';
-}
-function calcularAntiguedad(ingreso) {
-    const m = mesesDesde(ingreso);
-    if (m < 1) return 'Menos de un mes';
-    const y = Math.floor(m / 12), r = m % 12;
-    const aT = y === 1 ? '1 año' : y + ' años';
-    const mT = r === 1 ? '1 mes' : r + ' meses';
-    if (y < 1) return mT;
-    return r === 0 ? aT : aT + ' y ' + mT;
-}
-
-// ---------- Sesion simulada y permisos ----------
-// Usuario activo. Por ahora fijo (Capturador, igual que el navbar);
-// para probar el filtro de psicologo cambia a USUARIOS[2] o USUARIOS[3].
-// Despues vendra de la sesion real (session.php).
-const usuario = USUARIOS[0];
-let consulta = '';
-
-// Psicologo: solo sus pacientes. Administrador y Capturador: todos.
-function pacientesVisibles() {
-    return usuario.rol === 'Psicólogo'
-        ? PACIENTES.filter(p => p.id_psicologa === usuario.id_usuario)
-        : PACIENTES;
-}
-function buscar(q) {
-    const palabras = norm(q).split(/\s+/).filter(Boolean);
-    return pacientesVisibles().filter(p => {
-        const n = norm(nombreCompleto(p));
-        return palabras.every(w => n.includes(w));
-    });
-}
-
-// ---------- Vistas ----------
-const ICONO_LUPA = '<svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
-
-function vistaLista() {
-    $('#app').innerHTML = `
-        <div class="page-header">
-            <h1 class="page-title">Expedientes</h1>
-        </div>
-        <section class="form-card">
-            <div class="search-box">
-                ${ICONO_LUPA}
-                <input class="form-control" id="q" type="search" autocomplete="off" placeholder="Buscar por nombre o apellidos" aria-label="Buscar paciente por nombre o apellidos">
-                <button class="search-clear" id="limpiar" type="button" aria-label="Borrar búsqueda">×</button>
-            </div>
-            <p class="result-count" id="conteo" aria-live="polite"></p>
-            <div id="resultados"></div>
-        </section>
-        <p class="sim-note">${usuario.rol === 'Psicólogo' ? 'Mostrando solo tus pacientes asignados.' : 'Tienes acceso a todos los expedientes.'}</p>`;
-    const q = $('#q');
-    q.value = consulta;
-    q.oninput = () => { consulta = q.value; pintarResultados(); };
-    q.onkeydown = e => { if (e.key === 'Escape' && q.value) $('#limpiar').click(); };
-    $('#limpiar').onclick = () => { q.value = ''; consulta = ''; pintarResultados(); q.focus(); };
-    pintarResultados();
-}
-
-function pintarResultados() {
-    const lista = buscar(consulta);
-    $('#limpiar').style.display = consulta ? 'block' : 'none';
-    if (!lista.length) {
-        $('#conteo').textContent = '';
-        $('#resultados').innerHTML = `<div class="empty-state" role="alert"><strong>No existe el registro</strong>No encontramos pacientes que coincidan con “${esc(consulta.trim())}”. Revisa el nombre o los apellidos.</div>`;
-        return;
+    function mesesDesde(fecha) {
+        const a = parseFecha(fecha), b = new Date();
+        let m = (b.getFullYear() - a.getFullYear()) * 12 + b.getMonth() - a.getMonth();
+        if (b.getDate() < a.getDate()) m--;
+        return Math.max(m, 0);
     }
-    $('#conteo').textContent = (consulta.trim() ? 'Resultados: ' : 'Expedientes: ') + lista.length;
-    $('#resultados').innerHTML = '<ul class="result-list">' + lista.map(p => `
-        <li><button class="result-row" type="button" data-id="${p.id_paciente}">
-            <span class="avatar" aria-hidden="true">${esc(iniciales(p))}</span>
-            <span class="result-info"><span class="result-name">${esc(nombreCompleto(p))}</span>
-                <span class="result-sub">${esc(p.numero_expediente)} · ${esc(calcularEdad(p.fecha_nacimiento))}</span></span>
-            ${usuario.rol !== 'Psicólogo' ? `<span class="result-psico">${esc(nombreUsuario(p.id_psicologa))}</span>` : ''}
-            <span class="pill">${esc(p.estatus)}</span>
-        </button></li>`).join('') + '</ul>';
-    document.querySelectorAll('.result-row').forEach(b => b.onclick = () => { location.hash = '#/expediente/' + b.dataset.id; });
-}
+    function calcularEdad(nac) {
+        const m = mesesDesde(nac), y = Math.floor(m / 12);
+        if (y < 1) return m === 1 ? '1 mes' : m + ' meses';
+        return y === 1 ? '1 año' : y + ' años';
+    }
+    function calcularAntiguedad(ingreso) {
+        const m = mesesDesde(ingreso);
+        if (m < 1) return 'Menos de un mes';
+        const y = Math.floor(m / 12), r = m % 12;
+        const aT = y === 1 ? '1 año' : y + ' años';
+        const mT = r === 1 ? '1 mes' : r + ' meses';
+        if (y < 1) return mT;
+        return r === 0 ? aT : aT + ' y ' + mT;
+    }
 
-function vistaExpediente(id) {
-    const p = pacientesVisibles().find(x => x.id_paciente === id);
-    if (!p) {
+    // ---------- Acceso al backend ----------
+    async function pedir(endpoint) {
+        const res = await fetch(API + endpoint, { credentials: 'same-origin' });
+        if (res.status === 401) {
+            window.location.href = 'login.html';
+            throw new Error('sin-sesion');
+        }
+        let data = null;
+        try { data = await res.json(); } catch (e) { /* respuesta no JSON */ }
+        return { ok: res.ok, status: res.status, data };
+    }
+
+    const estado = (titulo, texto) => `<div class="empty-state"><strong>${esc(titulo)}</strong>${esc(texto)}</div>`;
+    const errorServidor = () => estado('No se pudo conectar con el servidor', 'Revisa que Apache y MySQL estén encendidos e intenta de nuevo.');
+
+    // ---------- Buscador ----------
+    function buscar(q) {
+        const palabras = norm(q).split(/\s+/).filter(Boolean);
+        return pacientes.filter(p => {
+            const n = norm(nombreCompleto(p));
+            return palabras.every(w => n.includes(w));
+        });
+    }
+
+    const ICONO_LUPA = '<svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+
+    async function vistaLista() {
+        $('#app').innerHTML = `
+            <div class="page-header">
+                <h1 class="page-title">Expedientes</h1>
+            </div>
+            <section class="form-card">
+                <div class="search-box">
+                    ${ICONO_LUPA}
+                    <input class="form-control" id="q" type="search" autocomplete="off" placeholder="Buscar por nombre o apellidos" aria-label="Buscar paciente por nombre o apellidos">
+                    <button class="search-clear" id="limpiar" type="button" aria-label="Borrar búsqueda">×</button>
+                </div>
+                <p class="result-count" id="conteo" aria-live="polite"></p>
+                <div id="resultados">${estado('Cargando expedientes…', '')}</div>
+            </section>
+            <p class="list-note">${esPsicologo() ? 'Mostrando solo tus pacientes asignados.' : 'Tienes acceso a todos los expedientes.'}</p>`;
+
+        const q = $('#q');
+        q.value = consulta;
+        q.oninput = () => { consulta = q.value; pintarResultados(); };
+        q.onkeydown = e => { if (e.key === 'Escape' && q.value) $('#limpiar').click(); };
+        $('#limpiar').onclick = () => { q.value = ''; consulta = ''; pintarResultados(); q.focus(); };
+
+        try {
+            const r = await pedir('get_pacientes.php');
+            if (!$('#resultados')) return;              // el usuario ya cambio de vista
+            if (!r.ok || !Array.isArray(r.data)) throw new Error('respuesta-invalida');
+            pacientes = r.data;
+            pintarResultados();
+        } catch (err) {
+            if (err.message === 'sin-sesion') return;
+            console.error('Error al cargar pacientes:', err);
+            if ($('#resultados')) $('#resultados').innerHTML = errorServidor();
+        }
+    }
+
+    function pintarResultados() {
+        const lista = buscar(consulta);
+        $('#limpiar').style.display = consulta ? 'block' : 'none';
+
+        if (!pacientes.length) {
+            $('#conteo').textContent = '';
+            $('#resultados').innerHTML = estado('Aún no hay expedientes', esPsicologo() ? 'Todavía no tienes pacientes asignados.' : 'Registra un paciente para que aparezca aquí.');
+            return;
+        }
+        if (!lista.length) {
+            $('#conteo').textContent = '';
+            $('#resultados').innerHTML = `<div class="empty-state" role="alert"><strong>No existe el registro</strong>No encontramos pacientes que coincidan con “${esc(consulta.trim())}”. Revisa el nombre o los apellidos.</div>`;
+            return;
+        }
+
+        $('#conteo').textContent = (consulta.trim() ? 'Resultados: ' : 'Expedientes: ') + lista.length;
+        $('#resultados').innerHTML = '<ul class="result-list">' + lista.map(p => `
+            <li><button class="result-row" type="button" data-id="${esc(p.id_paciente)}">
+                <span class="avatar" aria-hidden="true">${esc(iniciales(p))}</span>
+                <span class="result-info"><span class="result-name">${esc(nombreCompleto(p))}</span>
+                    <span class="result-sub">${esc(p.numero_expediente)} · ${esc(calcularEdad(p.fecha_nacimiento))}</span></span>
+                ${!esPsicologo() ? `<span class="result-psico">${esc(p.psicologa || 'Sin asignar')}</span>` : ''}
+                <span class="pill">${esc(p.estatus)}</span>
+            </button></li>`).join('') + '</ul>';
+        document.querySelectorAll('.result-row').forEach(b => {
+            b.onclick = () => { location.hash = '#/expediente/' + b.dataset.id; };
+        });
+    }
+
+    // ---------- Expediente ----------
+    async function vistaExpediente(id) {
         $('#app').innerHTML = `<button class="btn-back" id="volver" type="button">← Volver a expedientes</button>
-            <section class="form-card"><div class="empty-state" style="border:0"><strong>No existe el registro</strong>El expediente que buscas no está disponible.</div></section>`;
+            <section class="form-card">${estado('Cargando expediente…', '')}</section>`;
         $('#volver').onclick = () => { location.hash = '#/'; };
-        return;
+
+        let p;
+        try {
+            const r = await pedir('get_paciente.php?id=' + encodeURIComponent(id));
+            if (r.status === 404) {
+                $('#app').querySelector('.form-card').innerHTML = '<div class="empty-state" role="alert"><strong>No existe el registro</strong>El expediente que buscas no está disponible.</div>';
+                return;
+            }
+            if (!r.ok || !r.data || !r.data.success) throw new Error('respuesta-invalida');
+            p = r.data.paciente;
+        } catch (err) {
+            if (err.message === 'sin-sesion') return;
+            console.error('Error al cargar expediente:', err);
+            $('#app').querySelector('.form-card').innerHTML = errorServidor();
+            return;
+        }
+
+        const dato = (etiqueta, valor) => `<div class="form-group"><span class="form-label">${etiqueta}</span><span class="data-value">${esc(valor || '—')}</span></div>`;
+        $('#app').innerHTML = `
+            <button class="btn-back" id="volver" type="button">← Volver a expedientes</button>
+            <article class="form-card">
+                <div class="exp-head">
+                    <div><h1 class="page-title">${esc(nombreCompleto(p))}</h1>
+                        <div class="exp-meta"><span>${esc(p.numero_expediente)}</span><span class="pill">${esc(p.estatus)}</span></div></div>
+                    <a class="btn btn-primary" id="editar" href="editar-paciente.html?id=${encodeURIComponent(p.id_paciente)}">Editar</a>
+                </div>
+                <section class="form-section">
+                    <h2 class="section-title">Datos generales</h2>
+                    <div class="form-grid">
+                        ${dato('Edad', calcularEdad(p.fecha_nacimiento))}
+                        ${dato('Fecha de nacimiento', fmtFecha(p.fecha_nacimiento))}
+                        ${dato('Estatus', p.estatus)}
+                        ${dato('Psicóloga asignada', p.psicologa_nombre || 'Sin asignar')}
+                        ${dato('Fecha de ingreso', fmtFecha(p.fecha_ingreso))}
+                        ${dato('Tiempo en la institución', calcularAntiguedad(p.fecha_ingreso))}
+                    </div>
+                </section>
+                <section class="form-section">
+                    <h2 class="section-title">Datos del tutor y contacto</h2>
+                    <div class="form-grid">
+                        ${dato('Nombre del tutor', unir(p.tutor_nombres, p.tutor_primer_apellido, p.tutor_segundo_apellido))}
+                        ${dato('Parentesco', p.parentesco_tutor)}
+                        ${dato('Teléfono celular', fmtTel(p.telefono_principal))}
+                        ${dato('Teléfono de casa', fmtTel(p.telefono_secundario))}
+                        ${dato('Dirección actual', p.direccion_domicilio)}
+                    </div>
+                </section>
+            </article>`;
+        $('#volver').onclick = () => { location.hash = '#/'; };
+        window.scrollTo(0, 0);
     }
-    const t = p.tutor;
-    const dato = (etiqueta, valor, ancho) => `<div class="form-group${ancho ? ' col-span-3' : ''}"><span class="form-label">${etiqueta}</span><span class="data-value">${esc(valor || '—')}</span></div>`;
-    $('#app').innerHTML = `
-        <button class="btn-back" id="volver" type="button">← Volver a expedientes</button>
-        <article class="form-card">
-            <div class="exp-head">
-                <div><h1 class="page-title">${esc(nombreCompleto(p))}</h1>
-                    <div class="exp-meta"><span>${esc(p.numero_expediente)}</span><span class="pill">${esc(p.estatus)}</span></div></div>
-                <button class="btn btn-primary" id="editar" type="button">Editar</button>
-            </div>
-            <section class="form-section">
-                <h2 class="section-title">Datos generales</h2>
-                <div class="form-grid">
-                    ${dato('Edad', calcularEdad(p.fecha_nacimiento))}
-                    ${dato('Fecha de nacimiento', fmtFecha(p.fecha_nacimiento))}
-                    ${dato('Estatus', p.estatus)}
-                    ${dato('Psicóloga asignada', nombreUsuario(p.id_psicologa))}
-                    ${dato('Fecha de ingreso', fmtFecha(p.fecha_ingreso))}
-                    ${dato('Tiempo en la institución', calcularAntiguedad(p.fecha_ingreso))}
-                </div>
-            </section>
-            <section class="form-section">
-                <h2 class="section-title">Datos del tutor y contacto</h2>
-                <div class="form-grid">
-                    ${dato('Nombre del tutor', [t.nombres, t.primer_apellido, t.segundo_apellido].filter(Boolean).join(' '))}
-                    ${dato('Parentesco', t.parentesco)}
-                    ${dato('Correo electrónico', t.email)}
-                    ${dato('Teléfono celular', fmtTel(t.telefono_principal))}
-                    ${dato('Teléfono de casa', fmtTel(t.telefono_secundario))}
-                    ${dato('Dirección actual', t.direccion_domicilio)}
-                </div>
-            </section>
-        </article>`;
-    $('#volver').onclick = () => { location.hash = '#/'; };
-    $('#editar').onclick = () => avisar('La edición del expediente se conectará en su historia de usuario.');
-    window.scrollTo(0, 0);
-}
 
-let temporizador;
-function avisar(msg) {
-    const t = $('#toast');
-    t.textContent = msg;
-    t.hidden = false;
-    clearTimeout(temporizador);
-    temporizador = setTimeout(() => { t.hidden = true; }, 3200);
-}
+    // ---------- Arranque y rutas ----------
+    function enrutar() {
+        const m = location.hash.match(/^#\/expediente\/(\d+)$/);
+        m ? vistaExpediente(m[1]) : vistaLista();
+    }
 
-function enrutar() {
-    const m = location.hash.match(/^#\/expediente\/(\d+)$/);
-    m ? vistaExpediente(Number(m[1])) : vistaLista();
-}
-window.addEventListener('hashchange', enrutar);
-document.addEventListener('DOMContentLoaded', enrutar);
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const r = await pedir('session.php');
+            if (!r.data || !r.data.logged_in) {
+                window.location.href = 'login.html';
+                return;
+            }
+            sesion = r.data;
+        } catch (err) {
+            if (err.message === 'sin-sesion') return;
+            console.error('No se pudo verificar la sesión:', err);
+        }
+        window.addEventListener('hashchange', enrutar);
+        enrutar();
+    });
+})();
