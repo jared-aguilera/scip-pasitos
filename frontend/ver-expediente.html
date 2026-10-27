@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Expediente</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/expedientes.css">
+</head>
+
+<body>
+
+    <!-- navbar -->
+    <div id="navbar-container"></div>
+
+    <main class="main-container">
+
+        <button class="btn-back" id="btnVolver" type="button">&larr; Volver a expedientes</button>
+
+        <div id="avisoError" class="alert alert-danger" style="display: none;"></div>
+
+        <article class="form-card" id="cardExpediente">
+            <div class="exp-head">
+                <div>
+                    <h1 class="page-title" id="txtNombrePaciente">Cargando...</h1>
+                    <div class="exp-meta">
+                        <span id="txtNumeroExpediente">EXP-XXXX</span>
+                        <span class="badge-pill" id="badgeEstatus">Evaluación</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="btnEditar" type="button">Editar</button>
+            </div>
+
+            <!-- datos generales -->
+            <section class="form-section">
+                <h2 class="section-title">Datos generales</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <span class="form-label">Edad</span>
+                        <span class="data-value" id="txtEdad">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">Fecha de nacimiento</span>
+                        <span class="data-value" id="txtFechaNacimiento">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">Sexo</span>
+                        <span class="data-value" id="txtSexo">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">Estatus actual</span>
+                        <span class="data-value" id="txtEstatus">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">Psicóloga asignada</span>
+                        <span class="data-value" id="txtPsicologa">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">Fecha de ingreso</span>
+                        <span class="data-value" id="txtFechaIngreso">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">Tiempo en la institución</span>
+                        <span class="data-value" id="txtAntiguedad">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">Escolaridad actual</span>
+                        <span class="data-value" id="txtEscolaridad">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">Escuela de procedencia</span>
+                        <span class="data-value" id="txtEscuela">—</span>
+                    </div>
+                    <div class="form-group col-span-3">
+                        <span class="form-label">Motivo de consulta / Observaciones</span>
+                        <span class="data-value" id="txtMotivoConsulta">—</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- datos del tutor y contacto -->
+            <section class="form-section">
+                <h2 class="section-title">Datos del tutor y contacto</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <span class="form-label">Nombre del tutor</span>
+                        <span class="data-value" id="txtTutorNombre">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">Parentesco</span>
+                        <span class="data-value" id="txtTutorParentesco">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">Teléfono celular</span>
+                        <span class="data-value" id="txtTutorCelular">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">Teléfono de casa</span>
+                        <span class="data-value" id="txtTutorCasa">—</span>
+                    </div>
+                    <div class="form-group col-span-3">
+                        <span class="form-label">Dirección actual</span>
+                        <span class="data-value" id="txtDireccion">—</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- salud y medicacion -->
+            <section class="form-section">
+                <h2 class="section-title">Salud y medicación</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <span class="form-label">¿Toma medicamento?</span>
+                        <span class="data-value" id="txtTomaMed">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">¿Cuál medicamento?</span>
+                        <span class="data-value" id="txtDetalleMed">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">Alergias</span>
+                        <span class="data-value" id="txtAlergias">—</span>
+                    </div>
+                    <div class="form-group col-span-3">
+                        <span class="form-label">Problemas asociados</span>
+                        <span class="data-value" id="txtProblemas">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">Médico neurólogo</span>
+                        <span class="data-value" id="txtMedicoNombre">—</span>
+                    </div>
+                    <div class="form-group">
+                        <span class="form-label">Teléfono del médico</span>
+                        <span class="data-value" id="txtMedicoTelefono">—</span>
+                    </div>
+                </div>
+            </section>
+        </article>
+
+    </main>
+
+    <script src="js/navbar.js"></script>
+    <script src="js/ver-expediente.js"></script>
+</body>
+
+</html>

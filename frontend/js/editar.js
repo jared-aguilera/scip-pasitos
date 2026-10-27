@@ -186,6 +186,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         form.addEventListener('change', marcarCambios);
     }
 
+    const btnVolverExpediente = document.getElementById('btnVolverExpediente');
+    if (btnVolverExpediente) {
+        btnVolverExpediente.addEventListener('click', () => {
+            if (idPaciente) {
+                window.location.href = `ver-expediente.html?id=${encodeURIComponent(idPaciente)}`;
+            } else {
+                window.location.href = 'expedientes.html';
+            }
+        });
+    }
+
     if (btnDescartar) {
         btnDescartar.addEventListener('click', () => {
             window.location.reload();

@@ -29,12 +29,16 @@ try {
                    dm.alergias,
                    dm.problemas_asociados,
                    dm.medico_neurologo_nombre,
-                   dm.medico_neurologo_telefono
+                   dm.medico_neurologo_telefono,
+
+                   -- Psicologa asignada
+                   TRIM(CONCAT_WS(' ', u.nombre, u.apellidos)) AS psicologa_nombre
 
             FROM pacientes p
             LEFT JOIN paciente_tutor pt ON p.id_paciente = pt.id_paciente
             LEFT JOIN tutores t ON pt.id_tutor = t.id_tutor
             LEFT JOIN datos_medicos_paciente dm ON p.id_paciente = dm.id_paciente
+            LEFT JOIN usuarios u ON p.id_psicologa = u.id_usuario
             WHERE p.id_paciente = :id
             ORDER BY pt.es_contacto_principal DESC, pt.id_paciente_tutor ASC
             LIMIT 1";
