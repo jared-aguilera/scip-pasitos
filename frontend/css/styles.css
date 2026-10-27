@@ -252,17 +252,22 @@ body {
     margin-left: 2px;
 }
 
+/* campos editables (inputs, textareas y selects) */
 .form-control {
     font-family: inherit;
     font-size: 0.9rem;
     color: var(--text-main);
     background-color: #ffffff;
-    border: 1.5px solid var(--border);
+    border: 1.5px solid #cbd5e1;
     border-radius: var(--radius-sm);
     padding: 0.6rem 0.85rem;
-    transition: all 0.2s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
     outline: none;
     width: 100%;
+}
+
+.form-control:hover:not(:read-only):not(:disabled) {
+    border-color: #94a3b8;
 }
 
 .form-control:focus {
@@ -275,23 +280,38 @@ body {
     font-size: 0.85rem;
 }
 
-/* campos de solo lectura y deshabilitados */
-.form-control:read-only,
-.form-control:disabled {
-    background-color: var(--bg-readonly);
-    color: #475569;
-    border: 1.5px dashed var(--border-readonly);
-    font-weight: 500;
-    cursor: not-allowed;
-}
-
+/* listas desplegables (select) */
 select.form-control {
     appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #ffffff;
+    cursor: pointer !important;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
     background-size: 1rem;
     padding-right: 2.25rem;
+}
+
+select.form-control:hover {
+    border-color: #94a3b8;
+}
+
+select.form-control:invalid,
+select.form-control option[value=""] {
+    color: #94a3b8;
+}
+
+/* campos bloqueados exclusivos (numero de expediente, edad, campo medicamento apagado) */
+.form-control-readonly,
+.form-control:disabled {
+    background-color: #e2e8f0 !important;
+    color: #475569 !important;
+    border: 1.5px dashed #94a3b8 !important;
+    font-weight: 500;
+    cursor: not-allowed !important;
+    user-select: none;
 }
 
 textarea.form-control {

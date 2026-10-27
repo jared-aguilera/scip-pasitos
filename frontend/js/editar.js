@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (resPsi.ok) {
             const dataPsi = await resPsi.json();
             if (dataPsi.success && Array.isArray(dataPsi.data) && selectPsicologa) {
-                selectPsicologa.replaceChildren(new Option('Seleccione una psicóloga...', ''));
+                selectPsicologa.replaceChildren(new Option('Sin psicóloga asignada', ''));
                 dataPsi.data.forEach(ps => {
                     const nombre = [ps.nombre, ps.apellidos].filter(Boolean).join(' ');
                     selectPsicologa.appendChild(new Option(nombre, ps.id_usuario));

@@ -28,7 +28,7 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label" for="numero_expediente">Número de expediente</label>
-                        <input type="text" id="numero_expediente" name="numero_expediente" class="form-control"
+                        <input type="text" id="numero_expediente" name="numero_expediente" class="form-control form-control-readonly"
                             value="[ Se asignará automáticamente ]" readonly>
                     </div>
 
@@ -71,13 +71,14 @@
 
                     <div class="form-group">
                         <label class="form-label" for="edad_calculada">Edad</label>
-                        <input type="text" id="edad_calculada" class="form-control"
+                        <input type="text" id="edad_calculada" class="form-control form-control-readonly"
                             placeholder="Se calcula automáticamente" readonly>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="sexo">Sexo <span class="required">*</span></label>
                         <select id="sexo" name="sexo" class="form-control" required>
+                            <option value="" disabled selected>Seleccionar...</option>
                             <option value="Masculino">Masculino</option>
                             <option value="Femenino">Femenino</option>
                             <option value="Otro">Otro</option>
