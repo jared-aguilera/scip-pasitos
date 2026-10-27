@@ -2,6 +2,7 @@
 header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../auth.php';
 
 function responder(bool $ok, string $mensaje, int $codigo = 200): void
 {
@@ -38,6 +39,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $id_paciente = filter_input(INPUT_POST, 'id_paciente', FILTER_VALIDATE_INT);
 if (!$id_paciente) {
     responder(false, 'ID de paciente no recibido', 400);
+}
+
+// Requiere sesion; el Psicologo solo puede editar a sus pacientes asignados
+$sesion = sesion_requerida();
+if ($sesion['rol'] === 'Psicólogo') {
+    $permiso = $pdo->prepare('SELECT 1 FROM pacientes WHERE id_paciente = :id AND id_psicologa = :uid');
+    $permiso->execute(['id' => $id_paciente, 'uid' => $sesion['id']]);
+    if (!$permiso->fetchColumn()) {
+        responder(false, 'No tienes permiso para editar este expediente', 403);
+    }
 }
 
 // ---------- Lectura y validacion ----------

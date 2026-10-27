@@ -19,7 +19,7 @@ try {
 
     // Buscar al usuario cruzando la tabla usuarios con roles
     $stmt = $pdo->prepare("
-        SELECT u.id_usuario, u.password, u.nombre, r.nombre AS rol_nombre 
+        SELECT u.id_usuario, u.password, u.nombre, u.apellidos, r.nombre AS rol_nombre 
         FROM usuarios u 
         INNER JOIN roles r ON u.id_rol = r.id_rol 
         WHERE u.email = :email AND u.activo = 1
@@ -34,6 +34,7 @@ try {
         // Guardar sesion
         $_SESSION['usuario_id'] = $user['id_usuario'];
         $_SESSION['rol'] = $user['rol_nombre'];
+        $_SESSION['nombre'] = trim($user['nombre'] . ' ' . $user['apellidos']);
         
         echo json_encode([
             "success" => true, 

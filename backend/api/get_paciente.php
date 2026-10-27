@@ -2,6 +2,9 @@
 header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../auth.php';
+
+$sesion = sesion_requerida();
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
@@ -9,6 +12,14 @@ if (!$id) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'ID de paciente no recibido o invalido']);
     exit;
+}
+
+// El Psicologo solo puede abrir expedientes de pacientes asignados a el
+$filtroPsicologo = '';
+$params = ['id' => $id];
+if ($sesion['rol'] === 'Psicólogo') {
+    $filtroPsicologo = 'AND p.id_psicologa = :uid';
+    $params['uid'] = $sesion['id'];
 }
 
 try {
@@ -29,18 +40,22 @@ try {
                    dm.alergias,
                    dm.problemas_asociados,
                    dm.medico_neurologo_nombre,
-                   dm.medico_neurologo_telefono
+                   dm.medico_neurologo_telefono,
+
+                   -- Psicologa asignada (para mostrar en el expediente)
+                   TRIM(CONCAT_WS(' ', u.nombre, u.apellidos)) AS psicologa_nombre
 
             FROM pacientes p
             LEFT JOIN paciente_tutor pt ON p.id_paciente = pt.id_paciente
             LEFT JOIN tutores t ON pt.id_tutor = t.id_tutor
             LEFT JOIN datos_medicos_paciente dm ON p.id_paciente = dm.id_paciente
-            WHERE p.id_paciente = :id
+            LEFT JOIN usuarios u ON u.id_usuario = p.id_psicologa
+            WHERE p.id_paciente = :id {$filtroPsicologo}
             ORDER BY pt.es_contacto_principal DESC, pt.id_paciente_tutor ASC
             LIMIT 1";
 
     $stmt = $pdo->prepare($sql);
-    $stmt->execute(['id' => $id]);
+    $stmt->execute($params);
     $paciente = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($paciente) {
