@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('America/Tijuana');
+
 $host = 'localhost';
 $db   = 'scip_db';
 $user = 'root';

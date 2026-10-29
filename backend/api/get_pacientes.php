@@ -16,7 +16,7 @@ try {
                TRIM(CONCAT_WS(' ', u.nombre, u.apellidos)) AS psicologa
         FROM pacientes p
         LEFT JOIN usuarios u ON u.id_usuario = p.id_psicologa
-        ORDER BY p.nombres ASC
+        ORDER BY p.id_paciente ASC
     ");
     echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
 } catch (PDOException $e) {

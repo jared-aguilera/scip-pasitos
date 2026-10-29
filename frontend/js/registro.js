@@ -7,8 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputCualMedicamento = document.getElementById('detalle_medicamento');
     const btnSubmit = document.getElementById('btnRegistrarPaciente') || (form ? form.querySelector('button[type="submit"]') : null);
 
-    // Fecha actual por defecto
-    const hoy = new Date().toISOString().split('T')[0];
+    // Fecha local actual por defecto (sin desfase UTC)
+    const fechaActual = new Date();
+    const hoy = `${fechaActual.getFullYear()}-${String(fechaActual.getMonth() + 1).padStart(2, '0')}-${String(fechaActual.getDate()).padStart(2, '0')}`;
     if (inputFechaIngreso) {
         inputFechaIngreso.value = hoy;
     }

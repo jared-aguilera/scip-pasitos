@@ -28,13 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     loginAlert.style.display = 'none';
 
                     // Redireccion basada en el rol devuelto por la base de datos
-                    switch(data.rol) {
+                    switch (data.rol) {
                         case 'Capturador':
-                            window.location.href = 'registro-paciente.html';
+                            window.location.href = 'index.html';
                             break;
                         case 'Psicólogo':
                             // Esta vista la haran Jared y Dominic
-                            window.location.href = 'index.html'; 
+                            window.location.href = 'index.html';
                             break;
                         case 'Administrador':
                             window.location.href = 'index.html';
